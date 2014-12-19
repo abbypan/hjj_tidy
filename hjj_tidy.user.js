@@ -16,7 +16,7 @@
 
 function extract_floor_info(info) {
     var c = info.html()
-    .replace(/\s*<font color="gray" size="-1">.*?<\/font><br>/,'')
+    .replace(/^\s*<font color='gray' size='-1'>[^<]+<\/font><br>/,'')
     ;
     var w = info.text().length;
     var meta = info.parents("tr:eq(1)").next().text();
@@ -69,6 +69,7 @@ function extract_showmsg_content(d){
     var h = $.parseHTML(d);
 
     res["banner"] = $(h).find('a').eq(0).parent().html();
+    res["banner_reverse"] = res["banner"].replace(/^(.*?)(→.*?→)(.*)/, "$3$2$1");
     res["reply_form"] = $(h).find('input[name="last_floor"]').parent().prop('outerHTML');
 
     var poster = '';
@@ -93,6 +94,7 @@ function extract_showmsg_content(d){
 function get_css(){
     return '<style> \
     body { margin-left : 10%; margin-right: 10% } \
+    #banner_bottom { text-align: right; } \
     .pager,#thread_action { border: 0.1em solid rgb(153, 204, 0); } \
     .flcontent { padding-bottom : 0.5em; } \
     .floor,.onethread { \
@@ -123,119 +125,36 @@ function div_thread_action(){
         </div>';
 }
 
-function get_js(){
-return 'function filter_floor(is_to_filter,msg) { \
-    var i = 0; \
-    $(".floor").each(function() { \
-        if(i>0 && is_to_filter($(this))) $(this).hide();  \
-        i=1; \
-    }); \
- \
-    if(msg) $("#thread_action_temp").html(msg); \
-} \
- \
-function view_img(){ \
-    var is_to_filter = function(f){ \
-        var c = f.find(".flcontent").eq(0).html(); \
-        return  c.match(/\\<img /i) ? 0 : 1; \
-    }; \
- \
-    filter_floor(is_to_filter, "只看图"); \
-} \
- \
-function floor_keyword(){ \
-    var k = $("#floor_keyword_input").val(); \
- \
-    var is_to_filter = function(f){ \
-        var c = f.find(".flcontent").text().match(k); \
-        var p =  f.find(".floor_poster").text().match(k); \
-        return  (c || p) ? false : true; \
-    }; \
- \
-    filter_floor(is_to_filter, "抽取" + k); \
-} \
- \
-function floor_filter(){ \
-    var k = $("#floor_keyword_input").val(); \
- \
-    var is_to_filter = function(f){ \
-        var c = f.find(".flcontent").text().match(k); \
-        var p =  f.find(".floor_poster").text().match(k); \
-        return  (c || p) ? true : false; \
-    }; \
- \
-    filter_floor(is_to_filter, "过滤" + k); \
-} \
- \
-function min_word_num(){ \
-    var min = $("#min_word_num_input").val(); \
- \
-    var is_to_filter = function(f){ \
-        var c = f.find(".flcontent").attr("word_num"); \
-        return  c<min; \
-    }; \
- \
-    filter_floor(is_to_filter, "最少" + min + "字"); \
-} \
- \
-function view_all_floor(){ \
-    $(".floor").each(function() { \
-        $(this).show(); \
-    }); \
-    $("#thread_action_temp").html("全部"); \
-} \
- \
-function get_showmsg_poster(){ \
-    if($(".floor").eq(0).find(".floor_poster").length>0){ \
-        return $(".floor").eq(0).find(".floor_poster").text(); \
-    } \
-    return; \
-} \
- \
-function only_poster(){ \
-    var poster = get_showmsg_poster(); \
-    var is_to_filter = function(f){ \
-        var flposter = f.find(".floor_poster").text(); \
-        return  flposter!=poster ; \
-    }; \
- \
-    filter_floor(is_to_filter, "只看楼主"); \
-} \
- \
-function reverse_floor(){ \
-    var s = []; \
-    $(".floor").each(function(){ \
-        s.push($(this).prop("outerHTML")); \
-    }); \
-    var c = s.reverse().join("\\n"); \
-    $("#thread_floor_list").html(c); \
-    $("#thread_action_temp").html("倒序"); \
-} \
- \
-function reply_thread_floor(){ \
- \
-                                    $("#reply").find("textarea").val(""); \
-                                    var reply_type = $(this).attr("reply_type"); \
-                                    var c = $(this).parent().children(".chapter").text().replace(/\\n/g, " "); \
-                                    if(reply_type=="cite")  \
-                                        c = "" +  \
-                                        $(this).parent().children(".flcontent").text().replace(/(\\s*\\n)+/g, "\\n").trim().substr(0, 300) +  \
-                                    "......\\n\\n" + c ; \
-                                    $("#reply").find("textarea").val(c.trim()+"\\n"); \
- \
-                                    var pos = $("#reply").offset().top; \
-                                    $("html,body").animate({ scrollTop : pos },500); \
-} \
-';
-}
 
 (function(){
     $ = unsafeWindow.jQuery;
     var d = $('body').html();
     var res = extract_showmsg_content(d);
+var reply_thread_floor = function (){ 
+    $("#reply").find("textarea").val(""); 
+    var reply_type = $(this).attr("reply_type"); 
+    var c = $(this).parent().children(".chapter").text().replace(/\\n/g, " "); 
+    if(reply_type=="cite")  
+        c = "" +  
+            $(this).parent().children(".flcontent").text().replace(/(\\s*\\n)+/g, "\n").trim().substr(0, 300) +  
+            "......\n\n" + c ; 
+    $("#reply").find("textarea").val(c.trim()+"\n"); 
+
+    var pos = $("#reply").offset().top; 
+    $("html,body").animate({ scrollTop : pos },500); 
+};
+
+var  filter_floor = function(is_to_filter,msg) { 
+    var i = 0; 
+    $(".floor").each(function() { 
+        if(i>0 && is_to_filter($(this))) $(this).hide();  
+        i=1; 
+    }); 
+ 
+    if(msg) $("#thread_action_temp").html(msg); 
+} ;
     $('head').html(
                    '<title>' + res["title"] + '</title>' + 
-                   '<script>' + get_js() + '</script>' +
                    get_css()  
                   );
                   $('body').html( 
@@ -246,6 +165,7 @@ function reply_thread_floor(){ \
                                  '<div id="pager_top" class="pager">' + res["pager"] + '</div>' +
                                  '<div id="thread_floor_list">' + res["floor_list"] + '</div>' +
                                  '<div id="pager_bottom" class="pager">' + res["pager"] + '</div>' +
+         '<div id="banner_bottom">' + res["banner_reverse"] + '</div>' +
                                  '<div id="reply">' + res["reply_form"] + '</div>'
                                 );
 
@@ -290,12 +210,79 @@ function reply_thread_floor(){ \
                                     var pos = $('#reply').offset().top;
                                     $("html,body").animate({ scrollTop : pos },500);
                                 });
+    $('body').on('click', '#view_all_floor', function(){ 
+    $(".floor").each(function() { 
+        $(this).show(); 
+    }); 
+    $("#thread_action_temp").html("全部"); 
+ });
 
-    $('body').on('click', '#view_img', function(){ view_img(); });
-    $('body').on('click', '#only_poster', function(){ only_poster(); return false; });
-    $('body').on('click', '#min_word_num',function(){ min_word_num(); return false; });
-    $('body').on('click', '#floor_keyword',function(){ floor_keyword(); return false; });
-    $('body').on('click', '#floor_filter',function(){ floor_filter(); return false; });
-    $('body').on('click', '#view_all_floor', function(){ view_all_floor();return false; });
-    $('body').on('click', '#reverse_floor', function(){ reverse_floor();return false; });
+    $('body').on('click', '#view_img', function(){ 
+        var is_to_filter = function(f){ 
+            var c = f.find(".flcontent").eq(0).html(); 
+            return  c.match(/\<img /i) ? 0 : 1; 
+        }; 
+
+        filter_floor(is_to_filter, "只看图"); 
+    });
+
+
+    var get_showmsg_poster = function(){
+        if($(".floor").eq(0).find(".floor_poster").length>0){ 
+            return $(".floor").eq(0).find(".floor_poster").text(); 
+        } 
+        return; 
+    }; 
+
+    $('body').on('click', '#only_poster', function(){ 
+
+    var poster = get_showmsg_poster(); 
+    var is_to_filter = function(f){ 
+        var flposter = f.find(".floor_poster").text(); 
+        return  flposter!=poster ; 
+    }; 
+ 
+    filter_floor(is_to_filter, "只看楼主"); 
+ });
+    $('body').on('click', '#min_word_num',function(){ 
+    var min = $("#min_word_num_input").val(); 
+ 
+    var is_to_filter = function(f){ 
+        var c = f.find(".flcontent").attr("word_num"); 
+        return  c<min; 
+    }; 
+ 
+    filter_floor(is_to_filter, "最少" + min + "字"); 
+ });
+    $('body').on('click', '#floor_keyword',function(){ 
+    var k = $("#floor_keyword_input").val(); 
+ 
+    var is_to_filter = function(f){ 
+        var c = f.find(".flcontent").text().match(k); 
+        var p =  f.find(".floor_poster").text().match(k); 
+        return  (c || p) ? false : true; 
+    }; 
+ 
+    filter_floor(is_to_filter, "抽取" + k); 
+ });
+    $('body').on('click', '#floor_filter',function(){ 
+    var k = $("#floor_keyword_input").val(); 
+ 
+    var is_to_filter = function(f){ 
+        var c = f.find(".flcontent").text().match(k); 
+        var p =  f.find(".floor_poster").text().match(k); 
+        return  (c || p) ? true : false; 
+    }; 
+ 
+    filter_floor(is_to_filter, "过滤" + k); 
+ });
+    $('body').on('click', '#reverse_floor', function(){ 
+    var s = []; 
+    $(".floor").each(function(){ 
+        s.push($(this).prop("outerHTML")); 
+    }); 
+    var c = s.reverse().join("\n"); 
+    $("#thread_floor_list").html(c); 
+    $("#thread_action_temp").html("倒序"); 
+ });
 })();
