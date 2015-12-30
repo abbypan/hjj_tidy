@@ -6,3 +6,5 @@ hjj_tidy
 greasemonkey 脚本：[hjj_tidy_greasyfork](https://greasyfork.org/scripts/4435-hjj-tidy)
 
 ![hjj_tidy](hjj_tidy.png)
+
+注：会跟 hjj_thread_dewater 冲突。反正导出比较少用，平时默认激活 hjj_tidy， 需要的时候再临时激活 dewater即可。以后看看要不要两者合并。
