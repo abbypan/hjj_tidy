@@ -5,6 +5,4 @@ hjj_tidy
 
 greasemonkey 脚本：[hjj_tidy_greasyfork](https://greasyfork.org/scripts/4435-hjj-tidy)
 
-firefox 扩展：[hjj_tidy_firefox_addon](https://addons.mozilla.org/en-US/firefox/addon/hjj_tidy/)
-
 ![hjj_tidy](hjj_tidy.png)

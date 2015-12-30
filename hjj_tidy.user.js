@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------
+﻿// --------------------------------------------------------------------
 //
 // ==UserScript==
 // @name          hjj_tidy
@@ -59,7 +59,7 @@ function format_floor_content(f) {
 
 function extract_showmsg_content(d){
     var res = {};
-    var tm = d.match(/<title>(.+?)<\/title>/);
+    var tm = d.match(/var remarks = '(.+?)';/);
     res["title"]  = tm[1].replace(/ ―― 晋江文学城网友交流区/,'');
 
 
@@ -93,7 +93,7 @@ function extract_showmsg_content(d){
 
 function get_css(){
     return '<style> \
-    body { margin-left : 10%; margin-right: 10% } \
+    body { font-size: 150%; line-height: 150%; margin-left : 10%; margin-right: 10% } \
     #banner_bottom { text-align: right; } \
     .pager,#thread_action { border: 0.1em solid rgb(153, 204, 0); } \
     .flcontent { padding-bottom : 0.5em; } \
