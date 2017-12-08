@@ -1,11 +1,11 @@
-ï»¿// --------------------------------------------------------------------
+// --------------------------------------------------------------------
 //
 // ==UserScript==
 // @name          hjj_tidy
 // @namespace     http://abbypan.github.io/
 // @version       0.1
 // @author        Abby Pan (abbypan@gmail.com)
-// @description   çº¢æ™‹æ±Ÿ( http://bbs.jjwxc.net ) è´´å­æ•´ç†ï¼Œå»å¹¿å‘Šï¼ŒåŠ è·³è½¬ï¼Œåªçœ‹æ¥¼ä¸»ï¼Œæœ€å°‘å­—æ•°ç­‰ç­‰
+// @description   ºì½ú½­( http://bbs.jjwxc.net ) Ìù×ÓÕûÀí£¬È¥¹ã¸æ£¬¼ÓÌø×ª£¬Ö»¿´Â¥Ö÷£¬×îÉÙ×ÖÊıµÈµÈ
 // @copyright     2014, Abby Pan (http://abbypan.github.io/) 
 // @include       http://bbs.jjwxc.net/showmsg.php?board=*&id=*
 // @grant         none
@@ -21,7 +21,7 @@ function extract_floor_info(info) {
     var w = info.text().length;
     var meta = info.parents("tr:eq(1)").next().text();
 
-    var m = meta.match(/â„–(\d+).+?â˜†â˜†â˜†(.*?)äº([\d\s:-]+)ç•™è¨€â˜†â˜†â˜†/);
+    var m = meta.match(/¡í(\d+).+?¡î¡î¡î(.*?)ÓÚ([\d\s:-]+)ÁôÑÔ¡î¡î¡î/);
     return {
         content: c,
         word_num: w,
@@ -34,7 +34,7 @@ function extract_floor_info(info) {
 function format_floor_content(f) {
     var html = '<div class="floor" id="floor' + f.id + '" fid="'+ f.id +'">' +
         '<div class="flcontent" word_num="' + f.word_num + '">' + f.content + '</div>' +
-        '<span class="chapter">â„–' + f.id + '<span class="star">â˜†â˜†â˜†</span><span class="floor_poster">' + f.poster + '</span><span class="star">äº</span>' + f.time + 'ç•™è¨€<span class="star">â˜†â˜†â˜†</span></span>' +
+        '<span class="chapter">¡í' + f.id + '<span class="star">¡î¡î¡î</span><span class="floor_poster">' + f.poster + '</span><span class="star">ÓÚ</span>' + f.time + 'ÁôÑÔ<span class="star">¡î¡î¡î</span></span>' +
         '&nbsp;&nbsp;&nbsp;' +
         '<a  class="reply_thread_floor" reply_type="cite" href="#">&raquo;</a>' + 
         '&nbsp;&nbsp;&nbsp;' +
@@ -60,16 +60,16 @@ function format_floor_content(f) {
 function extract_showmsg_content(d){
     var res = {};
     var tm = d.match(/var remarks = '(.+?)';/);
-    res["title"]  = tm[1].replace(/ â€•â€• æ™‹æ±Ÿæ–‡å­¦åŸç½‘å‹äº¤æµåŒº/,'');
+    res["title"]  = tm[1].replace(/ ¨D¨D ½ú½­ÎÄÑ§³ÇÍøÓÑ½»Á÷Çø/,'');
 
 
-    var pm = d.match(/\>(å…±\d+é¡µ:.+?)<\/div>/);
+    var pm = d.match(/\>(¹²\d+Ò³:.+?)<\/div>/);
     res["pager"] = pm ? pm[1].replace(/<\/a>/g, '</a>&nbsp;') : '';
 
     var h = $.parseHTML(d);
 
     res["banner"] = $(h).find('a').eq(0).parent().html();
-    res["banner_reverse"] = res["banner"].replace(/^(.*?)(â†’.*?â†’)(.*)/, "$3$2$1");
+    res["banner_reverse"] = res["banner"].replace(/^(.*?)(¡ú.*?¡ú)(.*)/, "$3$2$1");
     res["reply_form"] = $(h).find('input[name="last_floor"]').parent().prop('outerHTML');
 
     var poster = '';
@@ -112,15 +112,15 @@ function get_css(){
 function div_thread_action(){
     return '<div id="thread_action"> \
         <input size="10" type="text" name="word_num" value=50 id="min_word_num_input" >  \
-        <a href="#" id="min_word_num">å­—æ•°</a> \
-        &nbsp; <input size="10" type="text" name="floor_keyword" id="floor_keyword_input" placeholder="å…³é”®å­—">  \
-        <a href="#" id="floor_keyword">æŠ½å–</a>  \
-        &nbsp; <a href="#" id="floor_filter">è¿‡æ»¤</a>  \
+        <a href="#" id="min_word_num">×ÖÊı</a> \
+        &nbsp; <input size="10" type="text" name="floor_keyword" id="floor_keyword_input" placeholder="¹Ø¼ü×Ö">  \
+        <a href="#" id="floor_keyword">³éÈ¡</a>  \
+        &nbsp; <a href="#" id="floor_filter">¹ıÂË</a>  \
 &nbsp; &nbsp; &nbsp; \
-        <a href="#" id="only_poster">æ¥¼ä¸»</a>  \
-        &nbsp; <a href="#" id="view_img">çœ‹å›¾</a>  \
-        &nbsp; <a href="#" id="reverse_floor">å€’åº</a>  \
-        &nbsp; <a id="view_all_floor" href="#">å…¨éƒ¨</a>  \
+        <a href="#" id="only_poster">Â¥Ö÷</a>  \
+        &nbsp; <a href="#" id="view_img">¿´Í¼</a>  \
+        &nbsp; <a href="#" id="reverse_floor">µ¹Ğò</a>  \
+        &nbsp; <a id="view_all_floor" href="#">È«²¿</a>  \
         <span id="thread_action_temp"></span>  \
         </div>';
 }
@@ -214,7 +214,7 @@ var  filter_floor = function(is_to_filter,msg) {
     $(".floor").each(function() { 
         $(this).show(); 
     }); 
-    $("#thread_action_temp").html("å…¨éƒ¨"); 
+    $("#thread_action_temp").html("È«²¿"); 
  });
 
     $('body').on('click', '#view_img', function(){ 
@@ -223,7 +223,7 @@ var  filter_floor = function(is_to_filter,msg) {
             return  c.match(/\<img /i) ? 0 : 1; 
         }; 
 
-        filter_floor(is_to_filter, "åªçœ‹å›¾"); 
+        filter_floor(is_to_filter, "Ö»¿´Í¼"); 
     });
 
 
@@ -242,7 +242,7 @@ var  filter_floor = function(is_to_filter,msg) {
         return  flposter!=poster ; 
     }; 
  
-    filter_floor(is_to_filter, "åªçœ‹æ¥¼ä¸»"); 
+    filter_floor(is_to_filter, "Ö»¿´Â¥Ö÷"); 
  });
     $('body').on('click', '#min_word_num',function(){ 
     var min = $("#min_word_num_input").val(); 
@@ -252,7 +252,7 @@ var  filter_floor = function(is_to_filter,msg) {
         return  c<min; 
     }; 
  
-    filter_floor(is_to_filter, "æœ€å°‘" + min + "å­—"); 
+    filter_floor(is_to_filter, "×îÉÙ" + min + "×Ö"); 
  });
     $('body').on('click', '#floor_keyword',function(){ 
     var k = $("#floor_keyword_input").val(); 
@@ -263,7 +263,7 @@ var  filter_floor = function(is_to_filter,msg) {
         return  (c || p) ? false : true; 
     }; 
  
-    filter_floor(is_to_filter, "æŠ½å–" + k); 
+    filter_floor(is_to_filter, "³éÈ¡" + k); 
  });
     $('body').on('click', '#floor_filter',function(){ 
     var k = $("#floor_keyword_input").val(); 
@@ -274,7 +274,7 @@ var  filter_floor = function(is_to_filter,msg) {
         return  (c || p) ? true : false; 
     }; 
  
-    filter_floor(is_to_filter, "è¿‡æ»¤" + k); 
+    filter_floor(is_to_filter, "¹ıÂË" + k); 
  });
     $('body').on('click', '#reverse_floor', function(){ 
     var s = []; 
@@ -283,6 +283,6 @@ var  filter_floor = function(is_to_filter,msg) {
     }); 
     var c = s.reverse().join("\n"); 
     $("#thread_floor_list").html(c); 
-    $("#thread_action_temp").html("å€’åº"); 
+    $("#thread_action_temp").html("µ¹Ğò"); 
  });
 })();
