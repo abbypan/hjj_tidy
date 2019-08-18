@@ -3,11 +3,12 @@
 // ==UserScript==
 // @name          hjj_tidy
 // @namespace     http://abbypan.github.io/
-// @version       0.1
+// @version       0.2
 // @author        Abby Pan (abbypan@gmail.com)
 // @description   红晋江( http://bbs.jjwxc.net ) 贴子整理，去广告，加跳转，只看楼主，最少字数等等
 // @copyright     2014, Abby Pan (http://abbypan.github.io/) 
-// @include       http://bbs.jjwxc.net/showmsg.php?board=*&id=*
+// @include       *://bbs.jjwxc.net/showmsg.php?board=*&id=*
+// @include       *://bbs.jjwxc.com/showmsg.php?board=*&id=*
 // @grant         none
 // ==/UserScript==
 //
@@ -59,8 +60,8 @@ function format_floor_content(f) {
 
 function extract_showmsg_content(d){
     var res = {};
-    var tm = d.match(/var remarks = '(.+?)';/);
-    res["title"]  = tm[1].replace(/ ―― 晋江文学城网友交流区/,'');
+    var tm = $('title').text();
+    res["title"]  = tm.replace(/—— 晋江文学城网友交流区/,'').replace(/^\s+/,'').replace(/\s+$/, '');
 
 
     var pm = d.match(/\>(共\d+页:.+?)<\/div>/);
